@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo}"></title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
@@ -59,9 +60,16 @@
         <div>
             <label for="numero">Numero</label>
             <div>
-                <input type="number" th:field="*{numero}" id="numero">
+                <input type="text" th:field="*{numero}" id="numero">
             </div>
             <div th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></div>
+        </div>
+        <div>
+            <label for="fechaNacimiento">Fecha Nacimiento</label>
+            <div>
+                <input type="date" th:field="*{fechaNacimiento}" id="fechaNacimiento" placeholder="yyyy-MM-dd">
+            </div>
+            <div th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></div>
         </div>
         <div>
             <div>

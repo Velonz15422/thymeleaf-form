@@ -1,15 +1,20 @@
 package com.spring.form.formthymeleaf.models.domain;
 
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.spring.form.formthymeleaf.validation.IdentificadorRegex;
 import com.spring.form.formthymeleaf.validation.Requerido;
 import com.spring.form.formthymeleaf.validation.RequeridoNumeroValidador;
 
-import io.micrometer.common.lang.NonNull;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class Usuario {
@@ -35,10 +40,15 @@ public class Usuario {
     @Email
     private String email;
 
-    @NonNull 
+    @NotNull
     @Min(5)
     @Max(5000)
     private Integer numero;
+
+    @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Future
+    private Date fechaNacimiento;
 
     public String getIdentificador() {
         return this.identificador;
@@ -94,6 +104,14 @@ public class Usuario {
 
     public void setNumero(Integer numero) {
         this.numero = numero;
+    }
+
+    public Date getFechaNacimiento() {
+        return this.fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(Date fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
 }
