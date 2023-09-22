@@ -1,8 +1,9 @@
 package com.spring.form.formthymeleaf.controllers;
 
-
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -12,10 +13,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.spring.form.formthymeleaf.editors.NombreMayusculaEditor;
 import com.spring.form.formthymeleaf.models.domain.Usuario;
 import com.spring.form.formthymeleaf.validation.UsuarioValidador;
 
@@ -29,19 +32,22 @@ public class FormController {
     private UsuarioValidador validador;
 
     @InitBinder
-    public void initBinder(WebDataBinder binder){
+    public void initBinder(WebDataBinder binder) {
         binder.addValidators(validador);
-
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setLenient(false);
-        binder.registerCustomEditor(Date.class,  new CustomDateEditor(null, false, 0));
+        binder.registerCustomEditor(Date.class, "fechaNacimiento", new CustomDateEditor(dateFormat, true));
+
+        binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
+
+        binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
     }
 
     @GetMapping("/form")
     public String form(Model model) {
         Usuario usuario = new Usuario();
-        usuario.setIdentificador("12345.678-k");
+        usuario.setIdentificador("12.345.678-K");
         usuario.setNombre("Alex");
         usuario.setApellido("velez");
         model.addAttribute("titulo", "Form");
@@ -49,15 +55,14 @@ public class FormController {
         return "/form";
     }
 
+    @ModelAttribute("paises")
+    public List<String> paises(){
+        return Arrays.asList("Spain", "MX", "CL", "COL","VZLA");
+    }
+
     @PostMapping("/form")
-    public String procesar(@Valid Usuario usuario , BindingResult result, Model model, SessionStatus status) {
-        //validador.validate(usuario, result);
-        if(result.hasErrors()){
-            //Map<String, String> errores = new HashMap<>();
-           // result.getFieldErrors().forEach(err ->{
-           //     errores.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
-           // });
-            //model.addAttribute("error", errores);
+    public String procesar(@Valid Usuario usuario, BindingResult result, Model model, SessionStatus status) {
+        if (result.hasErrors()) {
             return "form";
         }
 
