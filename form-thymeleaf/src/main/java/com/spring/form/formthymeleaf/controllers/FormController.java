@@ -1,9 +1,12 @@
 package com.spring.form.formthymeleaf.controllers;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -19,7 +22,10 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.spring.form.formthymeleaf.editors.NombreMayusculaEditor;
+import com.spring.form.formthymeleaf.editors.PaisPropertyEditor;
+import com.spring.form.formthymeleaf.models.domain.Pais;
 import com.spring.form.formthymeleaf.models.domain.Usuario;
+import com.spring.form.formthymeleaf.services.PaisService;
 import com.spring.form.formthymeleaf.validation.UsuarioValidador;
 
 import jakarta.validation.Valid;
@@ -30,6 +36,12 @@ public class FormController {
 
     @Autowired
     private UsuarioValidador validador;
+
+    @Autowired
+    private PaisService paisService;
+
+    @Autowired
+    private PaisPropertyEditor paisEditor;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -42,6 +54,18 @@ public class FormController {
         binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
 
         binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
+                        
+        binder.registerCustomEditor(Pais.class, "pais", paisEditor);
+
+    }
+
+    @ModelAttribute("listaRolesString")
+    public List<String> listaRolesString(){
+        List<String> roles = new ArrayList<>();
+        roles.add("ROLE_ADMIN");
+        roles.add("ROLE_USER");
+        roles.add("ROLE_MODERATOR");
+        return roles;
     }
 
     @GetMapping("/form")
@@ -55,9 +79,25 @@ public class FormController {
         return "/form";
     }
 
+    @ModelAttribute("listaPaises")
+    public List<Pais> listaPaises() {
+        return paisService.listar();
+    }
+
     @ModelAttribute("paises")
-    public List<String> paises(){
-        return Arrays.asList("Spain", "MX", "CL", "COL","VZLA");
+    public List<String> paises() {
+        return Arrays.asList("Spain", "MX", "CL", "COL", "VZLA");
+    }
+
+    @ModelAttribute("paisesMap")
+    public Map<String, String> paisesMap() {
+        Map<String, String> paises = new HashMap<String, String>();
+        paises.put("ES", "SPAIN");
+        paises.put("COL", "COLOMBIA");
+        paises.put("MX", "MEXICO");
+        paises.put("VZLA", "VENEZUELA");
+
+        return paises;
     }
 
     @PostMapping("/form")
