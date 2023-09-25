@@ -23,9 +23,12 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.spring.form.formthymeleaf.editors.NombreMayusculaEditor;
 import com.spring.form.formthymeleaf.editors.PaisPropertyEditor;
+import com.spring.form.formthymeleaf.editors.RolesEditor;
 import com.spring.form.formthymeleaf.models.domain.Pais;
+import com.spring.form.formthymeleaf.models.domain.Role;
 import com.spring.form.formthymeleaf.models.domain.Usuario;
 import com.spring.form.formthymeleaf.services.PaisService;
+import com.spring.form.formthymeleaf.services.RoleService;
 import com.spring.form.formthymeleaf.validation.UsuarioValidador;
 
 import jakarta.validation.Valid;
@@ -42,6 +45,12 @@ public class FormController {
 
     @Autowired
     private PaisPropertyEditor paisEditor;
+    
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private RolesEditor rolesEditor;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -56,7 +65,18 @@ public class FormController {
         binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
                         
         binder.registerCustomEditor(Pais.class, "pais", paisEditor);
+        binder.registerCustomEditor(Role.class, "roles", rolesEditor);
 
+    }
+
+    @ModelAttribute("genero")
+    public List<String> genero(){
+        return Arrays.asList("Hombre", "Mujer", "No binario");
+    }
+
+    @ModelAttribute("listaRoles")
+    public List<Role> listaRoles(){
+        return this.roleService.listar();
     }
 
     @ModelAttribute("listaRolesString")
@@ -68,12 +88,23 @@ public class FormController {
         return roles;
     }
 
+    @ModelAttribute("listaRolesMap")
+    public Map<String, String> listaRolesMap() {
+        Map<String, String> roles = new HashMap<String, String>();
+        roles.put("ROLE_ADMIN", "Admin");
+        roles.put("ROLE_USER", "Usuario");
+        roles.put("ROLE_MODERATOR", "Moderador");
+        return roles;
+    }
+
     @GetMapping("/form")
     public String form(Model model) {
         Usuario usuario = new Usuario();
         usuario.setIdentificador("12.345.678-K");
         usuario.setNombre("Alex");
         usuario.setApellido("velez");
+        usuario.setHabilitar(true);
+        usuario.setValorSecreto("Algun valor secreto");
         model.addAttribute("titulo", "Form");
         model.addAttribute("usuario", usuario);
         return "/form";

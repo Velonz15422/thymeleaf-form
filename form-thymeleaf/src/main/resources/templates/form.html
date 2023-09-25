@@ -13,6 +13,21 @@
     <form th:action="@{form}" th:object="${usuario}" method="post">
 
         <div>
+            <label for="habilitar">Habilitar</label>
+            <div>
+                <input type="checkbox"  id="habilitar" th:field="*{habilitar}">
+            </div>
+        </div>
+
+        <div>
+            <label>Genero</label>
+            <div th:each=" gen: ${genero}">
+                <input type="radio" th:field="*{genero}" th:value="${gen}">
+                <label th:for="${#ids.prev('genero')}" th:text="${gen}">Hombre</label>
+
+            <div th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></div>
+        </div>
+        <div>
             <label for="pais">Pais</label>
             <div>
                 <select id="pais" th:field="*{pais}"> 
@@ -22,7 +37,15 @@
             </div>
             <div th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></div>
         </div>
-        
+        <div th:each=" role: ${listaRoles}" >
+            <label>Roles</label>
+            <div>
+                <input type="checkbox"  th:field="*{roles}" th:value="${role.id}">
+                <label th:for="${#ids.prev('roles')}" th:text="${role.nombre}"></label>
+            </div>
+            <div th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
+        </div>
+
         <div>
             <label for="identificador">Identificador</label>
             <div>
@@ -86,6 +109,7 @@
                 <input type="submit" value="Enviar">
             </div>
         </div>
+        <input type="hidden" th:field="*{valorSecreto}">
     </form>
 </body>
 
