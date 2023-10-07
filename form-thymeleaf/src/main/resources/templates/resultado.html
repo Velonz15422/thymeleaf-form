@@ -9,11 +9,7 @@
 </head>
 
 <body>
-    <div class="alert alert-success">
-        <span th:text="'Tiempo transcurrido: ' + ${tiempoTranscurrido} + ' En ms'">
-
-        </span>
-    </div>
+    <section th:replace="componentes/tiempo :: interceptor">
     <h3 th:text="${titulo}"></h3>
     <ul>
         <li th:text="${usuario.identificador}"></li>
