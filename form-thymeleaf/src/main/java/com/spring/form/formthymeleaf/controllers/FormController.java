@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
@@ -45,7 +46,7 @@ public class FormController {
 
     @Autowired
     private PaisPropertyEditor paisEditor;
-    
+
     @Autowired
     private RoleService roleService;
 
@@ -63,24 +64,24 @@ public class FormController {
         binder.registerCustomEditor(String.class, "nombre", new NombreMayusculaEditor());
 
         binder.registerCustomEditor(String.class, "apellido", new NombreMayusculaEditor());
-                        
+
         binder.registerCustomEditor(Pais.class, "pais", paisEditor);
         binder.registerCustomEditor(Role.class, "roles", rolesEditor);
 
     }
 
     @ModelAttribute("genero")
-    public List<String> genero(){
+    public List<String> genero() {
         return Arrays.asList("Hombre", "Mujer", "No binario");
     }
 
     @ModelAttribute("listaRoles")
-    public List<Role> listaRoles(){
+    public List<Role> listaRoles() {
         return this.roleService.listar();
     }
 
     @ModelAttribute("listaRolesString")
-    public List<String> listaRolesString(){
+    public List<String> listaRolesString() {
         List<String> roles = new ArrayList<>();
         roles.add("ROLE_ADMIN");
         roles.add("ROLE_USER");
@@ -105,6 +106,8 @@ public class FormController {
         usuario.setApellido("velez");
         usuario.setHabilitar(true);
         usuario.setValorSecreto("Algun valor secreto");
+        usuario.setPais(new Pais(4, "COL", "COLOMBIA"));
+        usuario.setRoles(Arrays.asList(new Role(2, "Usuario", "ROLE_USER")));
         model.addAttribute("titulo", "Form");
         model.addAttribute("usuario", usuario);
         return "/form";
@@ -132,14 +135,22 @@ public class FormController {
     }
 
     @PostMapping("/form")
-    public String procesar(@Valid Usuario usuario, BindingResult result, Model model, SessionStatus status) {
+    public String procesar(@Valid Usuario usuario, BindingResult result, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("titulo", "Resultado Form");
+
             return "form";
         }
 
-        model.addAttribute("titulo", "Resultado Form");
-        model.addAttribute("usuario", usuario);
+        return "redirect:/ver";
+    }
 
+    @GetMapping("/ver")
+    public String ver(@SessionAttribute(name="usuario", required = false) Usuario usuario, Model model, SessionStatus status) {
+        if (usuario==null) {
+            return "redirect:/form";
+        }
+        model.addAttribute("titulo", "Resultado Form");
         status.setComplete();
 
         return "resultado";

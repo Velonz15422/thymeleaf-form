@@ -7,7 +7,7 @@ public class Role {
     private String role;
 
     public Role() {
-    
+
     }
 
     public Role(Integer id, String nombre, String role) {
@@ -38,6 +38,18 @@ public class Role {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Role)) {
+            return false;
+        }
+        Role role = (Role) obj;
+        return this.id != null && this.id.equals(role.getId());
     }
 
 }
